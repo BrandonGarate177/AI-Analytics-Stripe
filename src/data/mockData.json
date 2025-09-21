@@ -1,0 +1,323 @@
+{
+  "business_overview": {
+    "company_name": "TechFlow Solutions",
+    "industry": "B2B SaaS",
+    "founded": "2020-03-15",
+    "current_period": "2024-Q3",
+    "total_revenue": 127394.28,
+    "total_customers": 2847,
+    "active_subscriptions": 2103,
+    "churn_rate": 3.2,
+    "mrr": 42464.76,
+    "arr": 509577.12
+  },
+  
+  "customers": [
+    {
+      "id": "cus_1234567890",
+      "name": "Acme Corporation",
+      "email": "billing@acme.com",
+      "created": "2023-01-15T10:30:00Z",
+      "country": "US",
+      "state": "CA",
+      "industry": "Technology",
+      "company_size": "Enterprise",
+      "lifetime_value": 24500.00,
+      "total_spent": 18750.00,
+      "subscription_status": "active",
+      "current_plan": "enterprise",
+      "last_payment": "2024-09-15T14:22:00Z",
+      "risk_score": "low"
+    },
+    {
+      "id": "cus_0987654321",
+      "name": "StartupXYZ Inc",
+      "email": "finance@startupxyz.com",
+      "created": "2023-06-20T09:15:00Z",
+      "country": "US",
+      "state": "NY",
+      "industry": "Fintech",
+      "company_size": "Startup",
+      "lifetime_value": 8400.00,
+      "total_spent": 6200.00,
+      "subscription_status": "active",
+      "current_plan": "pro",
+      "last_payment": "2024-09-12T11:45:00Z",
+      "risk_score": "medium"
+    },
+    {
+      "id": "cus_1122334455",
+      "name": "Global Design Studio",
+      "email": "accounts@globaldesign.uk",
+      "created": "2022-11-08T16:45:00Z",
+      "country": "GB",
+      "state": null,
+      "industry": "Creative Services",
+      "company_size": "SMB",
+      "lifetime_value": 12300.00,
+      "total_spent": 11100.00,
+      "subscription_status": "active",
+      "current_plan": "pro",
+      "last_payment": "2024-09-10T08:30:00Z",
+      "risk_score": "low"
+    },
+    {
+      "id": "cus_5544332211",
+      "name": "Marketing Dynamics LLC",
+      "email": "billing@marketingdynamics.com",
+      "created": "2023-03-22T13:20:00Z",
+      "country": "CA",
+      "state": "ON",
+      "industry": "Marketing",
+      "company_size": "SMB",
+      "lifetime_value": 15600.00,
+      "total_spent": 12400.00,
+      "subscription_status": "active",
+      "current_plan": "pro",
+      "last_payment": "2024-09-08T15:10:00Z",
+      "risk_score": "low"
+    },
+    {
+      "id": "cus_9988776655",
+      "name": "Consulting Partners GmbH",
+      "email": "finance@consultingpartners.de",
+      "created": "2023-08-14T11:55:00Z",
+      "country": "DE",
+      "state": null,
+      "industry": "Consulting",
+      "company_size": "SMB",
+      "lifetime_value": 9200.00,
+      "total_spent": 7300.00,
+      "subscription_status": "cancelled",
+      "current_plan": "basic",
+      "last_payment": "2024-08-14T10:20:00Z",
+      "risk_score": "high"
+    }
+  ],
+
+  "transactions": [
+    {
+      "id": "pi_1234567890",
+      "customer_id": "cus_1234567890",
+      "amount": 2500.00,
+      "currency": "USD",
+      "status": "succeeded",
+      "created": "2024-09-15T14:22:00Z",
+      "description": "Enterprise Plan - Monthly",
+      "payment_method": "card",
+      "country": "US",
+      "product_id": "prod_enterprise"
+    },
+    {
+      "id": "pi_0987654321",
+      "customer_id": "cus_0987654321",
+      "amount": 1200.00,
+      "currency": "USD",
+      "status": "succeeded",
+      "created": "2024-09-12T11:45:00Z",
+      "description": "Pro Plan - Monthly",
+      "payment_method": "card",
+      "country": "US",
+      "product_id": "prod_pro"
+    },
+    {
+      "id": "pi_1122334455",
+      "customer_id": "cus_1122334455",
+      "amount": 890.00,
+      "currency": "GBP",
+      "status": "processing",
+      "created": "2024-09-10T08:30:00Z",
+      "description": "Pro Plan - Monthly",
+      "payment_method": "bank_transfer",
+      "country": "GB",
+      "product_id": "prod_pro"
+    },
+    {
+      "id": "pi_5544332211",
+      "customer_id": "cus_5544332211",
+      "amount": 3400.00,
+      "currency": "CAD",
+      "status": "succeeded",
+      "created": "2024-09-08T15:10:00Z",
+      "description": "Pro Plan + Add-ons - Quarterly",
+      "payment_method": "card",
+      "country": "CA",
+      "product_id": "prod_pro_addons"
+    },
+    {
+      "id": "pi_9988776655",
+      "customer_id": "cus_9988776655",
+      "amount": 750.00,
+      "currency": "EUR",
+      "status": "failed",
+      "created": "2024-08-14T10:20:00Z",
+      "description": "Basic Plan - Monthly",
+      "payment_method": "card",
+      "country": "DE",
+      "product_id": "prod_basic"
+    }
+  ],
+
+  "products": [
+    {
+      "id": "prod_basic",
+      "name": "Basic Plan",
+      "description": "Essential features for small teams",
+      "price": 49.00,
+      "currency": "USD",
+      "billing_interval": "month",
+      "active_subscriptions": 892,
+      "total_revenue": 28940.00,
+      "growth_rate": 12.3,
+      "churn_rate": 5.2,
+      "features": ["Up to 5 users", "Basic analytics", "Email support"]
+    },
+    {
+      "id": "prod_pro",
+      "name": "Pro Plan",
+      "description": "Advanced features for growing businesses",
+      "price": 149.00,
+      "currency": "USD",
+      "billing_interval": "month",
+      "active_subscriptions": 1247,
+      "total_revenue": 45230.00,
+      "growth_rate": 24.1,
+      "churn_rate": 3.8,
+      "features": ["Up to 25 users", "Advanced analytics", "Priority support", "API access"]
+    },
+    {
+      "id": "prod_enterprise",
+      "name": "Enterprise Package",
+      "description": "Full-featured solution for large organizations",
+      "price": 499.00,
+      "currency": "USD",
+      "billing_interval": "month",
+      "active_subscriptions": 89,
+      "total_revenue": 32100.00,
+      "growth_rate": 18.7,
+      "churn_rate": 2.1,
+      "features": ["Unlimited users", "Custom analytics", "Dedicated support", "White-label options"]
+    },
+    {
+      "id": "prod_pro_addons",
+      "name": "Pro Plan + Add-ons",
+      "description": "Pro plan with additional services",
+      "price": 249.00,
+      "currency": "USD",
+      "billing_interval": "month",
+      "active_subscriptions": 456,
+      "total_revenue": 21124.00,
+      "growth_rate": 31.2,
+      "churn_rate": 4.1,
+      "features": ["Pro features", "Advanced integrations", "Custom reporting", "Training sessions"]
+    }
+  ],
+
+  "revenue_by_month": [
+    { "month": "2024-01", "revenue": 98234.50, "customers": 2456, "transactions": 3201 },
+    { "month": "2024-02", "revenue": 102567.80, "customers": 2523, "transactions": 3345 },
+    { "month": "2024-03", "revenue": 107891.20, "customers": 2598, "transactions": 3456 },
+    { "month": "2024-04", "revenue": 112345.60, "customers": 2667, "transactions": 3567 },
+    { "month": "2024-05", "revenue": 118567.90, "customers": 2734, "transactions": 3678 },
+    { "month": "2024-06", "revenue": 121234.40, "customers": 2789, "transactions": 3789 },
+    { "month": "2024-07", "revenue": 124567.80, "customers": 2823, "transactions": 3834 },
+    { "month": "2024-08", "revenue": 126789.10, "customers": 2841, "transactions": 3876 },
+    { "month": "2024-09", "revenue": 127394.28, "customers": 2847, "transactions": 3892 }
+  ],
+
+  "revenue_by_geography": [
+    {
+      "country": "US",
+      "country_name": "United States",
+      "revenue": 67230.45,
+      "percentage": 52.8,
+      "customers": 1502,
+      "avg_order_value": 94.30,
+      "growth_rate": 15.2
+    },
+    {
+      "country": "GB",
+      "country_name": "United Kingdom",
+      "revenue": 23450.80,
+      "percentage": 18.4,
+      "customers": 456,
+      "avg_order_value": 87.60,
+      "growth_rate": 22.1
+    },
+    {
+      "country": "CA",
+      "country_name": "Canada",
+      "revenue": 15670.25,
+      "percentage": 12.3,
+      "customers": 312,
+      "avg_order_value": 91.20,
+      "growth_rate": 18.7
+    },
+    {
+      "country": "DE",
+      "country_name": "Germany",
+      "revenue": 12890.15,
+      "percentage": 10.1,
+      "customers": 298,
+      "avg_order_value": 76.80,
+      "growth_rate": 8.9
+    },
+    {
+      "country": "AU",
+      "country_name": "Australia",
+      "revenue": 8154.63,
+      "percentage": 6.4,
+      "customers": 189,
+      "avg_order_value": 82.40,
+      "growth_rate": 28.3
+    }
+  ],
+
+  "customer_segments": [
+    {
+      "segment": "Enterprise",
+      "customer_count": 156,
+      "revenue": 45230.00,
+      "avg_lifetime_value": 28500.00,
+      "churn_rate": 2.1,
+      "growth_rate": 18.7
+    },
+    {
+      "segment": "SMB",
+      "customer_count": 1834,
+      "revenue": 67890.15,
+      "avg_lifetime_value": 12400.00,
+      "churn_rate": 4.2,
+      "growth_rate": 21.3
+    },
+    {
+      "segment": "Startup",
+      "customer_count": 857,
+      "revenue": 14274.13,
+      "avg_lifetime_value": 6800.00,
+      "churn_rate": 6.8,
+      "growth_rate": 35.2
+    }
+  ],
+
+  "metrics_summary": {
+    "current_month": {
+      "revenue": 127394.28,
+      "revenue_growth": 18.2,
+      "customers": 2847,
+      "customer_growth": 12.1,
+      "transactions": 3892,
+      "transaction_growth": 8.4,
+      "avg_order_value": 89.32,
+      "aov_growth": -2.4,
+      "conversion_rate": 3.24,
+      "conversion_growth": 0.8
+    },
+    "payment_methods": {
+      "card": { "revenue": 89567.20, "percentage": 70.3, "transaction_count": 2734 },
+      "bank_transfer": { "revenue": 25890.45, "percentage": 20.3, "transaction_count": 892 },
+      "digital_wallet": { "revenue": 8934.50, "percentage": 7.0, "transaction_count": 234 },
+      "other": { "revenue": 3002.13, "percentage": 2.4, "transaction_count": 32 }
+    }
+  }
+}
