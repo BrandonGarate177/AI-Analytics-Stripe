@@ -1,5 +1,4 @@
-# ![Stripe - Clone](https://stripechat.netlify.app/)
-
+[# ![Stripe - Clone](https://stripechat.netlify.app/)](https://stripechat.netlify.app/)
 
 A React-based clone of Stripe's dashboard UI, built as a foundation for prototyping AI-powered analytics features in B2B SaaS applications.
 
