@@ -19,9 +19,8 @@
   minify = true
 
 # Configure secrets scanning
-[build.processing.secrets]
-  # Allow REACT_APP_OPENAI_API to be in build output (it's expected for client-side use)
-  omit_keys = ["REACT_APP_OPENAI_API"]
+[build.processing]
+  skip_processing = false
 
 [[redirects]]
   from = "/*"
