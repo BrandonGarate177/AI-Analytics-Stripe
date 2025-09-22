@@ -6,7 +6,7 @@ class OpenAIService {
       this.apiKey = process.env.REACT_APP_OPENAI_API || '';
       
       if (!this.apiKey) {
-        console.warn('OpenAI API key not found. Please set REACT_APP_OPENAI_API_KEY in your .env.local file. Chat functionality will use mock responses.');
+        console.warn('OpenAI API key not found. Please set REACT_APP_OPENAI_API in your .env.local file. Chat functionality will use mock responses.');
       }
     }
   

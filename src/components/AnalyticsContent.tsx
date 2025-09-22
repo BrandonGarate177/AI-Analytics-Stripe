@@ -94,7 +94,7 @@ const AnalyticsContent: React.FC = () => {
       let errorMessage = '';
       if (error instanceof Error) {
         if (error.message.includes('API key')) {
-          errorMessage = `**API Configuration Required**\n\nTo use the AI-powered analytics, please:\n\n1. Create a \`.env.local\` file in your project root\n2. Add your OpenAI API key: \`REACT_APP_OPENAI_API_KEY=your-api-key-here\`\n3. Restart your development server\n\n**Please try asking a specific question about your business metrics.**`;
+          errorMessage = `**API Configuration Required**`;
         } else if (error.message.includes('API error')) {
           errorMessage = `**API Error**\n\nThere was an issue connecting to the AI service. This might be due to:\n\n• Network connectivity issues\n• API rate limiting\n• Invalid API key\n\n**Please try again with a specific question about your business metrics.**`;
         } else {
