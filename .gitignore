@@ -7,3 +7,4 @@
 /uploads
 /public
 .env.local
+.env

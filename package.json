@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "description": "A React-based clone of Stripe's dashboard UI - prototype for AI-powered B2B SaaS analytics features",
-  "homepage": "https://github.com/yourusername/stripe-dashboard-clone",
+  "homepage": ".",
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/stripe-dashboard-clone.git"
