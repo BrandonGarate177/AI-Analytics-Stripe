@@ -90,14 +90,6 @@ src/
 - Payment methods breakdown
 - Placeholder chart areas
 
-## 🔧 Customization
-
-### Colors
-The project uses Stripe's color palette defined in `tailwind.config.js`:
-- **Primary Blue**: `#635bff`
-- **Purple**: `#7c3aed`
-- **Gray Scale**: Custom gray palette matching Stripe's design
-
 ### Adding New Components
 1. Create new component files in `src/components/`
 2. Import and use in `App.tsx` or other components
@@ -122,12 +114,6 @@ The project uses Stripe's color palette defined in `tailwind.config.js`:
 - Charts show placeholder content
 - Search functionality is UI-only
 - All data is static/mock data
-
-
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
