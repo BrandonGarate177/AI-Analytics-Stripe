@@ -2,13 +2,13 @@
 
 A React-based clone of Stripe's dashboard UI, built as a foundation for prototyping AI-powered analytics features in B2B SaaS applications.
 
-![Dashboard Preview](https://via.placeholder.com/800x400/635bff/ffffff?text=Stripe+Dashboard+Clone)
+![Dashboard Preview](https://stripechat.netlify.app/)
 
-## 🎯 Purpose
+## Purpose
 
 This project serves as a UI shell for experimenting with AI-driven analytics features in a familiar, professional dashboard interface. It replicates Stripe's clean design patterns and component structure, providing a solid foundation for B2B SaaS product development.
 
-## ✨ Features
+## Features
 
 - **Authentic Stripe UI**: Pixel-perfect recreation of Stripe's dashboard interface
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
@@ -17,7 +17,7 @@ This project serves as a UI shell for experimenting with AI-driven analytics fea
 - **Component-Based**: Modular architecture for easy customization and extension
 - **Interactive Elements**: Hover states, transitions, and micro-interactions
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **React 18** - Modern React with hooks and concurrent features
 - **TypeScript** - Type safety and enhanced developer experience
@@ -25,7 +25,7 @@ This project serves as a UI shell for experimenting with AI-driven analytics fea
 - **Lucide React** - Beautiful, customizable icon library
 - **PostCSS & Autoprefixer** - CSS processing and browser compatibility
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -53,7 +53,7 @@ This project serves as a UI shell for experimenting with AI-driven analytics fea
 4. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -66,7 +66,7 @@ src/
 └── index.css              # Global styles with Tailwind directives
 ```
 
-## 🎨 UI Components
+## UI Components
 
 ### Sidebar Navigation
 - Collapsible sidebar with Stripe-style navigation
@@ -106,56 +106,32 @@ The project uses Stripe's color palette defined in `tailwind.config.js`:
 - Inter font family for typography
 - Responsive design with mobile-first approach
 
-## 🚧 Current Status
+## Current Status
 
-**UI Shell Complete** ✅
+**UI Shell Complete** 
 - All major dashboard components implemented
 - Responsive design working
 - Hover states and transitions
 - TypeScript integration
 
-**Placeholder Elements** 🔄
+**Placeholder Elements** 
 - Buttons are non-functional (as intended)
 - Charts show placeholder content
 - Search functionality is UI-only
 - All data is static/mock data
 
-## 🔮 Future Enhancements
 
-This UI shell is designed to be extended with:
 
-- **AI Analytics Integration**: Machine learning insights and predictions
-- **Real-time Data**: Connect to actual payment processing APIs
-- **Advanced Charts**: Interactive data visualizations
-- **User Management**: Authentication and role-based access
-- **API Integration**: Backend connectivity for dynamic data
-- **Testing Suite**: Comprehensive test coverage
-
-## 🤝 Contributing
-
-This is a prototype project, but contributions are welcome!
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Stripe** - For the beautiful dashboard design inspiration
 - **Tailwind CSS** - For the excellent utility-first CSS framework
 - **Lucide** - For the clean, consistent icon set
 - **React Team** - For the amazing React framework
 
-## 📞 Contact
-
-For questions about this project or potential collaborations on AI-powered B2B SaaS features, feel free to reach out!
-
----
 
 **Note**: This is a UI clone created for educational and prototyping purposes. It is not affiliated with or endorsed by Stripe, Inc.
