@@ -1,8 +1,11 @@
-# Stripe Dashboard Clone
+# ![Stripe - Clone](https://stripechat.netlify.app/)
+
 
 A React-based clone of Stripe's dashboard UI, built as a foundation for prototyping AI-powered analytics features in B2B SaaS applications.
 
-![Dashboard Preview](https://stripechat.netlify.app/)
+
+https://github.com/user-attachments/assets/e109379d-05eb-4593-b49a-1054e4eeca04
+
 
 ## Purpose
 
