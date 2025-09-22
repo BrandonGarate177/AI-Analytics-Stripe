@@ -5,11 +5,10 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Configure secrets scanning to allow expected environment variables
+# Configure build processing
 [build.processing]
   skip_processing = false
 
-# Allow specific environment variables that are expected to be in the build
 [build.processing.css]
   bundle = true
   minify = true
@@ -17,10 +16,6 @@
 [build.processing.js]
   bundle = true
   minify = true
-
-# Configure secrets scanning
-[build.processing]
-  skip_processing = false
 
 [[redirects]]
   from = "/*"
