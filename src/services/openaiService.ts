@@ -3,56 +3,91 @@ class OpenAIService {
     private baseURL = 'https://api.openai.com/v1';
   
     constructor() {
-      this.apiKey = process.env.REACT_APP_OPENAI_API_KEY || '';
+      this.apiKey = process.env.REACT_APP_OPENAI_API || '';
       
       if (!this.apiKey) {
-        console.warn('OpenAI API key not found. Chat functionality will use mock responses.');
+        console.warn('OpenAI API key not found. Please set REACT_APP_OPENAI_API_KEY in your .env.local file. Chat functionality will use mock responses.');
       }
     }
   
-    // Database schema for context
-    private getDatabaseSchema(): string {
+    // Business data context for analysis
+    private getBusinessContext(): string {
       return `
-  DATABASE SCHEMA:
-  - customers: id, name, email, created, country, industry, company_size, lifetime_value, total_spent, subscription_status, current_plan, risk_score
-  - transactions: id, customer_id, amount, currency, status, created, description, payment_method, country, product_id
-  - products: id, name, price, active_subscriptions, total_revenue, growth_rate, churn_rate
-  - revenue_by_month: month, revenue, customers, transactions
-  - revenue_by_geography: country, country_name, revenue, percentage, customers, avg_order_value, growth_rate
-  - customer_segments: segment, customer_count, revenue, avg_lifetime_value, churn_rate, growth_rate
+  BUSINESS CONTEXT - TechFlow Solutions (B2B SaaS):
   
-  BUSINESS CONTEXT:
-  - Company: TechFlow Solutions (B2B SaaS)
-  - Plans: Basic ($49/mo), Pro ($149/mo), Enterprise ($499/mo), Pro + Add-ons ($249/mo)
-  - Current period: 2024-Q3
-  - Total customers: 2,847
-  - Total revenue: $127,394.28
+  COMPANY OVERVIEW:
+  - Industry: B2B SaaS
+  - Founded: 2020
+  - Current Period: 2024-Q3
+  - Total Customers: 2,847
+  - Total Revenue: $127,394.28
+  - Monthly Recurring Revenue: $42,464.76
+  - Annual Run Rate: $509,577.12
+  
+  PRODUCT PORTFOLIO:
+  - Basic Plan: $49/mo (892 active subscriptions, $28,940 revenue, 12.3% growth)
+  - Pro Plan: $149/mo (1,247 active subscriptions, $45,230 revenue, 24.1% growth)
+  - Enterprise: $499/mo (89 active subscriptions, $32,100 revenue, 18.7% growth)
+  - Pro + Add-ons: $249/mo (456 active subscriptions, $21,124 revenue, 31.2% growth)
+  
+  CUSTOMER SEGMENTS:
+  - Enterprise: 156 customers, $45,230 revenue, 2.1% churn rate
+  - SMB: 1,834 customers, $67,890 revenue, 4.2% churn rate
+  - Startup: 857 customers, $14,274 revenue, 6.8% churn rate
+  
+  GEOGRAPHIC DISTRIBUTION:
+  - United States: 52.8% of revenue ($67,230)
+  - United Kingdom: 18.4% of revenue ($23,451)
+  - Canada: 12.3% of revenue ($15,670)
+  - Germany: 10.1% of revenue ($12,890)
+  - Australia: 6.4% of revenue ($8,155)
+  
+  KEY METRICS:
+  - Overall Churn Rate: 3.2%
+  - Conversion Rate: 3.24%
+  - Average Order Value: $89.32
+  - Customer Growth: 12.1% vs last month
+  - Revenue Growth: 18.2% vs last quarter
       `;
     }
   
-    private createPrompt(userQuestion: string): string {
-      return `You are an SQL expert for TechFlow Solutions, a B2B SaaS company. 
-  
-  ${this.getDatabaseSchema()}
-  
-  INSTRUCTIONS:
-  1. Convert the user's question into a SQL query that answers their question
-  2. Use proper SQL syntax with table joins when needed
-  3. Focus on business metrics: revenue, growth, customers, churn, geographic distribution
-  4. Return ONLY the SQL query, no explanations or formatting
-  5. Use appropriate aggregations (SUM, COUNT, AVG) and date functions
-  6. For growth calculations, compare current vs previous periods
-  7. Limit results to top 10 unless specified otherwise
-  
-  USER QUESTION: "${userQuestion}"
-  
-  SQL QUERY:`;
+    private createAnalysisPrompt(userQuestion: string, businessData: any): string {
+      return `You are a senior business analyst for TechFlow Solutions, a B2B SaaS company. 
+
+${this.getBusinessContext()}
+
+CURRENT BUSINESS DATA:
+${JSON.stringify(businessData, null, 2)}
+
+INSTRUCTIONS:
+1. Analyze the user's question about the business data
+2. Provide insights, trends, and actionable recommendations
+3. Focus on business impact and strategic implications
+4. Use specific metrics and percentages from the data
+5. Identify key patterns, opportunities, and risks
+6. Suggest next steps or areas for further investigation
+7. Be concise but comprehensive in your analysis
+
+USER QUESTION: "${userQuestion}"
+
+ANALYSIS:`;
     }
   
-    async generateSQLQuery(userQuestion: string): Promise<string> {
+    async analyzeBusinessData(userQuestion: string, businessData: any): Promise<{ analysis: string; isValid: boolean }> {
+      // Validate question quality
+      if (!this.isValidQuestion(userQuestion)) {
+        return {
+          analysis: `I'm sorry, but your question "${userQuestion}" is unclear or too short. Please provide more context or ask a specific question about your business metrics. For example:\n\n• "What's driving our revenue growth?"\n• "Which products are performing best?"\n• "Show me customer trends by geography"\n• "How are our different customer segments performing?"`,
+          isValid: false
+        };
+      }
+
       if (!this.apiKey) {
         // Fallback for development without API key
-        return this.generateMockSQL(userQuestion);
+        return {
+          analysis: this.generateMockAnalysis(userQuestion, businessData),
+          isValid: true
+        };
       }
   
       try {
@@ -67,126 +102,14 @@ class OpenAIService {
             messages: [
               {
                 role: 'system',
-                content: 'You are an expert SQL analyst. Return only SQL queries, no explanations.'
+                content: 'You are a senior business analyst. Provide clear, actionable insights from data analysis. Focus on business impact, trends, and recommendations. Use professional language with specific metrics and percentages when available. If the question is unclear or not related to business analytics, politely ask for clarification.'
               },
               {
                 role: 'user',
-                content: this.createPrompt(userQuestion)
+                content: this.createAnalysisPrompt(userQuestion, businessData)
               }
             ],
-            max_tokens: 500,
-            temperature: 0.1 // Low temperature for consistent SQL generation
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error(`OpenAI API error: ${response.status}`);
-        }
-  
-        const data = await response.json();
-        const sqlQuery = data.choices[0]?.message?.content?.trim() || '';
-        
-        // Clean up the SQL query (remove code block formatting if present)
-        return sqlQuery.replace(/```sql\n?|```\n?/g, '').trim();
-        
-      } catch (error) {
-        console.error('OpenAI API Error:', error);
-        // Fallback to mock SQL generation
-        return this.generateMockSQL(userQuestion);
-      }
-    }
-  
-    // Fallback SQL generation for development
-    private generateMockSQL(userQuestion: string): string {
-      const lowerQuestion = userQuestion.toLowerCase();
-      
-      if (lowerQuestion.includes('revenue') && lowerQuestion.includes('growth')) {
-        return `
-          SELECT 
-            p.name as product_name,
-            SUM(t.amount) as total_revenue,
-            COUNT(DISTINCT t.customer_id) as customers,
-            (SUM(t.amount) / LAG(SUM(t.amount)) OVER (ORDER BY p.name) - 1) * 100 as growth_rate
-          FROM transactions t
-          JOIN products p ON t.product_id = p.id
-          WHERE t.status = 'succeeded'
-          GROUP BY p.name
-          ORDER BY growth_rate DESC
-          LIMIT 5;
-        `.trim();
-      }
-      
-      if (lowerQuestion.includes('customer') && (lowerQuestion.includes('segment') || lowerQuestion.includes('plan'))) {
-        return `
-          SELECT 
-            current_plan,
-            COUNT(*) as customer_count,
-            AVG(total_spent) as avg_spent,
-            AVG(lifetime_value) as avg_lifetime_value
-          FROM customers
-          WHERE subscription_status = 'active'
-          GROUP BY current_plan
-          ORDER BY customer_count DESC;
-        `.trim();
-      }
-      
-      if (lowerQuestion.includes('geographic') || lowerQuestion.includes('country')) {
-        return `
-          SELECT 
-            country,
-            COUNT(*) as customers,
-            SUM(total_spent) as revenue,
-            AVG(total_spent) as avg_order_value
-          FROM customers
-          GROUP BY country
-          ORDER BY revenue DESC
-          LIMIT 10;
-        `.trim();
-      }
-      
-      // Default query
-      return `
-        SELECT 
-          COUNT(*) as total_customers,
-          SUM(total_spent) as total_revenue,
-          AVG(total_spent) as avg_order_value
-        FROM customers
-        WHERE subscription_status = 'active';
-      `.trim();
-    }
-  
-    // Generate natural language explanation of results
-    async explainResults(sqlQuery: string, results: any[], originalQuestion: string): Promise<string> {
-      if (!this.apiKey) {
-        return this.generateMockExplanation(results, originalQuestion);
-      }
-  
-      try {
-        const response = await fetch(`${this.baseURL}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiKey}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-4',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a business analyst. Explain query results in a clear, professional manner with key insights.'
-              },
-              {
-                role: 'user',
-                content: `
-                  Question: "${originalQuestion}"
-                  SQL Query: ${sqlQuery}
-                  Results: ${JSON.stringify(results, null, 2)}
-                  
-                  Please provide a clear business explanation of these results, highlighting key insights and actionable recommendations.
-                `
-              }
-            ],
-            max_tokens: 300,
+            max_tokens: 800,
             temperature: 0.3
           })
         });
@@ -196,17 +119,163 @@ class OpenAIService {
         }
   
         const data = await response.json();
-        return data.choices[0]?.message?.content?.trim() || 'Analysis completed successfully.';
+        const analysis = data.choices[0]?.message?.content?.trim() || 'Analysis completed successfully.';
+        
+        // Check if the response indicates the question was unclear
+        const isUnclearResponse = this.isUnclearResponse(analysis);
+        
+        return {
+          analysis,
+          isValid: !isUnclearResponse
+        };
         
       } catch (error) {
         console.error('OpenAI API Error:', error);
-        return this.generateMockExplanation(results, originalQuestion);
+        // Fallback to mock analysis
+        return {
+          analysis: this.generateMockAnalysis(userQuestion, businessData),
+          isValid: true
+        };
       }
     }
-  
-    private generateMockExplanation(results: any[], originalQuestion: string): string {
-      return `Based on your question "${originalQuestion}", here are the key insights from your data:\n\n${JSON.stringify(results, null, 2)}`;
+
+    // Validate if the question is meaningful for business analysis
+    private isValidQuestion(question: string): boolean {
+      const trimmed = question.trim();
+      
+      // Too short or empty
+      if (trimmed.length < 3) return false;
+      
+      // Common unclear patterns
+      const unclearPatterns = [
+        /^[a-z]{1,5}$/i, // Single words like "hello", "hi", "test"
+        /^[^a-zA-Z]*$/, // No letters
+        /^(what|how|why|when|where)\s*$/, // Just question words
+        /^(yes|no|ok|okay|thanks|thank you)\s*$/i, // Simple responses
+      ];
+      
+      return !unclearPatterns.some(pattern => pattern.test(trimmed));
     }
+
+    // Check if the LLM response indicates the question was unclear
+    private isUnclearResponse(response: string): boolean {
+      const unclearIndicators = [
+        'unclear',
+        'not clear',
+        'unclear question',
+        'please clarify',
+        'provide more context',
+        'not specific enough',
+        'apologies, but',
+        'could you please provide more context',
+        'could you clarify',
+        'more information needed'
+      ];
+      
+      const lowerResponse = response.toLowerCase();
+      return unclearIndicators.some(indicator => lowerResponse.includes(indicator));
+    }
+  
+    // Fallback analysis generation for development
+    private generateMockAnalysis(userQuestion: string, businessData: any): string {
+      const lowerQuestion = userQuestion.toLowerCase();
+      
+      if (lowerQuestion.includes('revenue') && lowerQuestion.includes('growth')) {
+        return `📈 **Revenue Growth Analysis**
+
+Your revenue performance shows strong growth across all product lines:
+
+**Key Findings:**
+• Pro Plan leads with 24.1% growth rate and $45,230 revenue
+• Pro + Add-ons shows exceptional 31.2% growth rate
+• Enterprise maintains solid 18.7% growth with high-value customers
+• Basic Plan shows steady 12.3% growth for market penetration
+
+**Strategic Insights:**
+• Pro tier products are your primary growth drivers
+• Add-on services have the highest growth potential
+• Enterprise segment provides revenue stability
+• Consider expanding Pro + Add-ons features
+
+**Recommendations:**
+• Invest more in Pro Plan marketing and features
+• Develop additional add-on services
+• Focus on converting Basic to Pro customers
+• Maintain Enterprise customer satisfaction`;
+      }
+      
+      if (lowerQuestion.includes('customer') && (lowerQuestion.includes('segment') || lowerQuestion.includes('plan'))) {
+        return `👥 **Customer Segment Analysis**
+
+Your customer base shows healthy distribution across segments:
+
+**Segment Performance:**
+• SMB: 1,834 customers (64.4%) - $67,890 revenue
+• Startup: 857 customers (30.1%) - $14,274 revenue  
+• Enterprise: 156 customers (5.5%) - $45,230 revenue
+
+**Key Insights:**
+• SMB segment provides volume and revenue stability
+• Enterprise customers have highest revenue per customer
+• Startup segment shows growth potential but higher churn
+• Enterprise has lowest churn rate at 2.1%
+
+**Recommendations:**
+• Focus on SMB retention and expansion
+• Develop startup-to-SMB upgrade path
+• Maintain Enterprise customer satisfaction
+• Consider startup-specific features`;
+      }
+      
+      if (lowerQuestion.includes('geographic') || lowerQuestion.includes('country')) {
+        return `🌍 **Geographic Revenue Analysis**
+
+Your global presence shows strong market diversification:
+
+**Market Performance:**
+• United States: 52.8% of revenue ($67,230) - Primary market
+• United Kingdom: 18.4% of revenue ($23,451) - Strong secondary market
+• Canada: 12.3% of revenue ($15,670) - Solid North American coverage
+• Germany: 10.1% of revenue ($12,890) - EU market opportunity
+• Australia: 6.4% of revenue ($8,155) - High growth potential
+
+**Strategic Insights:**
+• US market dominance provides revenue stability
+• UK shows strong enterprise adoption
+• Germany represents untapped EU potential
+• Australia has highest growth rate (28.3%)
+
+**Recommendations:**
+• Maintain US market leadership
+• Expand EU presence through Germany
+• Increase investment in Australian market
+• Consider local partnerships in key markets`;
+      }
+      
+      // Default analysis
+      return `📊 **Business Overview Analysis**
+
+Based on your current data, here are the key business insights:
+
+**Overall Performance:**
+• Total Revenue: $127,394.28 (18.2% growth)
+• Customer Base: 2,847 customers (12.1% growth)
+• Monthly Recurring Revenue: $42,464.76
+• Churn Rate: 3.2% (industry-leading)
+
+**Key Strengths:**
+• Strong revenue growth across all segments
+• Excellent customer retention
+• Diversified geographic presence
+• Healthy product portfolio
+
+**Areas for Focus:**
+• Continue Pro Plan growth momentum
+• Expand add-on services
+• Optimize startup-to-SMB conversion
+• Explore new geographic markets`;
+    }
+  
   }
   
   export const openaiService = new OpenAIService();

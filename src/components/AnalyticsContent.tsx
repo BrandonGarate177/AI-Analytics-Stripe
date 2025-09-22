@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { BarChart3, TrendingUp, DollarSign, Users, Filter, Download, Calendar, Send, MessageCircle, Bot, User } from 'lucide-react';
 import dataService from '../data/dataService';
 import openaiService from '../services/openaiService';
+import chartService, { ChartData } from '../services/chartService';
+import ChartComponent from './ChartComponent';
 
 interface ChatMessage {
   id: string;
   type: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  charts?: ChartData[];
 }
 
 const AnalyticsContent: React.FC = () => {
@@ -15,7 +18,7 @@ const AnalyticsContent: React.FC = () => {
     {
       id: '1',
       type: 'assistant',
-      content: "👋 Hi! I'm your analytics assistant. I have access to all your TechFlow Solutions business data. Ask me anything about your metrics, revenue trends, customer behavior, or business performance. For example, you could ask 'What's driving our revenue growth?' or 'Which products are performing best?'",
+      content: "Hi! I'm your analytics assistant. I have access to all your TechFlow Solutions business data and can generate interactive charts to visualize your insights.\n\n**Ask me specific questions about:**\n• Revenue trends and growth drivers\n• Customer segments and behavior\n• Product performance and metrics\n• Geographic distribution\n• Transaction analysis\n\n**Example questions:**\n• \"What's driving our revenue growth?\"\n• \"Which products are performing best?\"\n• \"Show me customer trends by geography\"\n• \"How are our different customer segments performing?\"\n\nI'll provide detailed analysis and generate relevant charts to help you understand your data better!",
       timestamp: new Date()
     }
   ]);
@@ -45,56 +48,7 @@ const AnalyticsContent: React.FC = () => {
   }, []);
 
   // Enhanced responses using real data
-  const getDataDrivenResponse = (question: string): string => {
-    if (!businessData) return "I'm still loading your data. Please try again in a moment.";
-    
-    const { overview, revenueInsights, customerInsights, productInsights, geographicInsights } = businessData;
-    const lowerQuestion = question.toLowerCase();
-    
-    if (lowerQuestion.includes('revenue') || lowerQuestion.includes('sales')) {
-      const topProducts = revenueInsights.top_products.slice(0, 3);
-      const topCountries = revenueInsights.top_countries.slice(0, 3);
-      
-      return `📈 **TechFlow Solutions Revenue Analysis**\n\nYour revenue performance is excellent! Here's the breakdown:\n\n**Overall Performance:**\n• Total Revenue: ${dataService.formatCurrency(revenueInsights.total_revenue)}\n• Growth Rate: ${dataService.formatPercentage(revenueInsights.growth_rate)} vs last quarter\n• Monthly Recurring Revenue: ${dataService.formatCurrency(revenueInsights.mrr)}\n• Annual Run Rate: ${dataService.formatCurrency(revenueInsights.arr)}\n\n**Top Revenue Drivers:**\n${topProducts.map((p: any) => `• ${p.name}: ${dataService.formatCurrency(p.total_revenue)} (${dataService.formatPercentage(p.growth_rate)} growth)`).join('\n')}\n\n**Geographic Performance:**\n${topCountries.map((c: any) => `• ${c.country_name}: ${dataService.formatCurrency(c.revenue)} (${dataService.formatPercentage(c.percentage)} of total)`).join('\n')}\n\n**Key Insight:** Your Pro Plan is your strongest performer with exceptional growth, while Enterprise shows solid high-value customer acquisition.`;
-    }
-    
-    if (lowerQuestion.includes('customer') || lowerQuestion.includes('user')) {
-      const segments = customerInsights.segments;
-      const highRiskCount = customerInsights.high_risk_count;
-      
-      return `👥 **Customer Intelligence Report**\n\nYour customer base is growing strongly with healthy metrics:\n\n**Customer Overview:**\n• Total Customers: ${customerInsights.total_customers.toLocaleString()}\n• Growth Rate: ${dataService.formatPercentage(customerInsights.growth_rate)} vs last month\n• Conversion Rate: ${dataService.formatPercentage(customerInsights.conversion_rate)}\n• Churn Rate: ${dataService.formatPercentage(customerInsights.churn_rate)} (excellent!)\n\n**Customer Segments:**\n${segments.map((s: any) => `• ${s.segment}: ${s.customer_count} customers, ${dataService.formatCurrency(s.revenue)} revenue (${dataService.formatPercentage(s.growth_rate)} growth)`).join('\n')}\n\n**Risk Management:**\n• High-risk customers: ${highRiskCount} (requires attention)\n• Overall retention is strong across all segments\n\n**Recommendation:** Focus on converting more Startup customers to SMB tier as they mature.`;
-    }
-    
-    if (lowerQuestion.includes('product') || lowerQuestion.includes('plan')) {
-      const products = productInsights.top_performing;
-      const fastestGrowing = productInsights.fastest_growing;
-      
-      return `🚀 **Product Performance Analysis**\n\nYour product portfolio is performing excellently:\n\n**Revenue Leaders:**\n${products.map((p: any) => `• ${p.name}: ${dataService.formatCurrency(p.total_revenue)}\n  - ${p.active_subscriptions} active subscriptions\n  - ${dataService.formatPercentage(p.growth_rate)} growth rate\n  - ${dataService.formatPercentage(p.churn_rate)} churn rate`).join('\n\n')}\n\n**Growth Champions:**\n${fastestGrowing.slice(0, 2).map((p: any) => `• ${p.name}: ${dataService.formatPercentage(p.growth_rate)} growth`).join('\n')}\n\n**Key Insights:**\n• Pro Plan has optimal balance of volume and value\n• Enterprise shows premium positioning success\n• Add-on services have exceptional growth potential\n• Basic Plan provides solid customer acquisition funnel\n\n**Strategy:** Consider expanding add-on offerings and enterprise features.`;
-    }
-    
-    if (lowerQuestion.includes('trend') || lowerQuestion.includes('forecast')) {
-      const revenueGrowth = dataService.calculateRevenueGrowth();
-      const recentTrend = dataService.getRecentRevenueTrend(3);
-      
-      return `📊 **Trend Analysis & Forecasting**\n\nYour business shows strong positive momentum:\n\n**Revenue Trends:**\n• Current month-over-month growth: ${dataService.formatPercentage(revenueGrowth)}\n• Quarterly growth rate: ${dataService.formatPercentage(overview.revenueGrowth)}\n• Average order value: ${dataService.formatCurrency(overview.avgOrderValue)}\n\n**Recent Performance:**\n${recentTrend.map((m: any) => `• ${m.month}: ${dataService.formatCurrency(m.revenue)} (${m.customers} customers)`).join('\n')}\n\n**Predictive Insights:**\n• Current trajectory suggests ${dataService.formatCurrency(overview.totalRevenue * 1.18)} potential next quarter\n• Customer acquisition is accelerating\n• Geographic diversification reducing risk\n• Product mix optimizing for higher value\n\n**Forecast:** Maintain current growth strategy while preparing infrastructure for scale.`;
-    }
-    
-    if (lowerQuestion.includes('geography') || lowerQuestion.includes('location') || lowerQuestion.includes('country')) {
-      const topCountries = geographicInsights.top_countries;
-      
-      return `🌍 **Geographic Revenue Intelligence**\n\nYour global presence is well-distributed with clear opportunities:\n\n**Market Performance:**\n${topCountries.map((c: any) => `• **${c.country_name}**: ${dataService.formatCurrency(c.revenue)}\n  - ${dataService.formatPercentage(c.percentage)} of total revenue\n  - ${c.customers} customers\n  - ${dataService.formatCurrency(c.avg_order_value)} average order value\n  - ${dataService.formatPercentage(c.growth_rate)} growth rate`).join('\n\n')}\n\n**Strategic Insights:**\n• US market dominance provides stability\n• UK shows excellent enterprise potential\n• Australia has highest growth rate - prime for expansion\n• Germany represents untapped EU opportunity\n• Canada provides solid North American coverage\n\n**Recommendations:**\n• Increase marketing investment in Australia and Germany\n• Consider EU-specific enterprise packages\n• Explore partnerships in high-growth markets`;
-    }
-
-    if (lowerQuestion.includes('failed') || lowerQuestion.includes('decline') || lowerQuestion.includes('problem')) {
-      const failedTransactions = dataService.getFailedTransactions();
-      const highRiskCustomers = dataService.getHighRiskCustomers();
-      
-      return `⚠️ **Risk Analysis & Problem Areas**\n\nHere are the areas requiring attention:\n\n**Failed Transactions:**\n• Total failed: ${failedTransactions.length} transactions\n• Most recent failures: ${failedTransactions.slice(0, 2).map(t => `${t.customer_name} (${dataService.formatCurrency(t.amount)})`).join(', ')}\n\n**High-Risk Customers:**\n• Count: ${highRiskCustomers.length} customers\n• Potential revenue at risk: ${dataService.formatCurrency(highRiskCustomers.reduce((sum, c) => sum + c.total_spent, 0))}\n\n**Churn Analysis:**\n• Overall churn rate: ${dataService.formatPercentage(overview.churnRate)} (industry-leading)\n• Highest risk segment: Startup customers\n\n**Action Items:**\n• Follow up on failed payments immediately\n• Implement retention campaigns for high-risk accounts\n• Consider payment method alternatives for international customers`;
-    }
-    
-    // Default response for other questions
-    return `🤖 **TechFlow Solutions Analytics**\n\nBased on your current data, here are the key highlights:\n\n**Business Health:**\n• Total Revenue: ${dataService.formatCurrency(overview.totalRevenue)} (${dataService.formatPercentage(overview.revenueGrowth)} growth)\n• Customer Base: ${overview.totalCustomers.toLocaleString()} customers (${dataService.formatPercentage(overview.customerGrowth)} growth)\n• Conversion Rate: ${dataService.formatPercentage(overview.conversionRate)}\n• Monthly Recurring Revenue: ${dataService.formatCurrency(overview.mrr)}\n\n**Top Insights:**\n• Pro Plan and Enterprise driving most revenue\n• Strong geographic diversification across 5 markets\n• Excellent customer retention and low churn\n• Healthy growth trajectory across all metrics\n\n**Question about "${question}":** I'd be happy to dive deeper into this specific area. Try asking about revenue drivers, customer segments, product performance, or geographic trends for detailed analysis!`;
-  };
+  
 
   const handleSubmitMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,21 +67,22 @@ const AnalyticsContent: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Step 1: Generate SQL query using OpenAI
-      const sqlQuery = await openaiService.generateSQLQuery(currentQuestion);
+      // Step 1: Generate AI analysis
+      const analysisResult = await openaiService.analyzeBusinessData(currentQuestion, businessData);
       
-      // Step 2: Execute the SQL query on our data (simplified frontend execution)
-      const queryResults = executeQueryOnData(sqlQuery);
+      // Step 2: Only generate charts if the analysis is valid
+      let charts: ChartData[] = [];
+      if (analysisResult.isValid) {
+        charts = chartService.generateChartsForQuestion(currentQuestion, businessData);
+      }
       
-      // Step 3: Generate explanation using OpenAI
-      const explanation = await openaiService.explainResults(sqlQuery, queryResults, currentQuestion);
-      
-      // Step 4: Create response with SQL query, results, and explanation
+      // Step 3: Create response with analysis and charts (only if valid)
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: `🤖 **AI Analysis Complete**\n\n**Generated SQL Query:**\n\`\`\`sql\n${sqlQuery}\n\`\`\`\n\n**Results:**\n${explanation}\n\n**Data Summary:**\n${JSON.stringify(queryResults, null, 2)}`,
-        timestamp: new Date()
+        content: analysisResult.analysis,
+        timestamp: new Date(),
+        charts: charts
       };
       
       setChatMessages(prev => [...prev, assistantMessage]);
@@ -135,12 +90,26 @@ const AnalyticsContent: React.FC = () => {
     } catch (error) {
       console.error('Error processing question:', error);
       
-      // Fallback to your existing data-driven response
+      // Determine error type and provide appropriate response
+      let errorMessage = '';
+      if (error instanceof Error) {
+        if (error.message.includes('API key')) {
+          errorMessage = `**API Configuration Required**\n\nTo use the AI-powered analytics, please:\n\n1. Create a \`.env.local\` file in your project root\n2. Add your OpenAI API key: \`REACT_APP_OPENAI_API_KEY=your-api-key-here\`\n3. Restart your development server\n\n**Please try asking a specific question about your business metrics.**`;
+        } else if (error.message.includes('API error')) {
+          errorMessage = `**API Error**\n\nThere was an issue connecting to the AI service. This might be due to:\n\n• Network connectivity issues\n• API rate limiting\n• Invalid API key\n\n**Please try again with a specific question about your business metrics.**`;
+        } else {
+          errorMessage = `**Processing Error**\n\nAn unexpected error occurred while processing your question.\n\n**Error:** ${error.message}\n\n**Please try rephrasing your question or ask about specific metrics like revenue, customers, or products.**`;
+        }
+      } else {
+        errorMessage = `**Unknown Error**\n\nAn unexpected error occurred. Please try again.\n\n**Please ask a specific question about your business metrics.**`;
+      }
+      
       const fallbackResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: getDataDrivenResponse(currentQuestion),
+        content: errorMessage,
         timestamp: new Date()
+        // No charts for error responses
       };
       
       setChatMessages(prev => [...prev, fallbackResponse]);
@@ -149,52 +118,6 @@ const AnalyticsContent: React.FC = () => {
     }
   };
 
-  // Add this helper function to execute queries on frontend data
-  const executeQueryOnData = (sqlQuery: string): any[] => {
-    if (!businessData) return [];
-    
-    // Simplified SQL execution - in a real app, this would be done on the backend
-    // For now, we'll interpret common query patterns and return relevant data
-    
-    const lowerQuery = sqlQuery.toLowerCase();
-    
-    if (lowerQuery.includes('products') && lowerQuery.includes('revenue')) {
-      return businessData.products.map((p: any) => ({
-        product_name: p.name,
-        total_revenue: p.total_revenue,
-        customers: p.active_subscriptions,
-        growth_rate: p.growth_rate
-      }));
-    }
-    
-    if (lowerQuery.includes('customers') && lowerQuery.includes('plan')) {
-      const planGroups = businessData.customers.reduce((acc: any, customer: any) => {
-        if (!acc[customer.current_plan]) {
-          acc[customer.current_plan] = {
-            current_plan: customer.current_plan,
-            customer_count: 0,
-            avg_spent: 0,
-            total_spent: 0
-          };
-        }
-        acc[customer.current_plan].customer_count++;
-        acc[customer.current_plan].total_spent += customer.total_spent;
-        return acc;
-      }, {});
-      
-      return Object.values(planGroups).map((group: any) => ({
-        ...group,
-        avg_spent: group.total_spent / group.customer_count
-      }));
-    }
-    
-    if (lowerQuery.includes('country') || lowerQuery.includes('geographic')) {
-      return businessData.geoData;
-    }
-    
-    // Default: return overview metrics
-    return [businessData.overview];
-  };
 
   // Dynamic metrics from real data
   const analyticsMetrics = businessData ? [
@@ -343,6 +266,15 @@ const AnalyticsContent: React.FC = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Charts for assistant messages */}
+              {message.type === 'assistant' && message.charts && message.charts.length > 0 && (
+                <div className="w-full mt-4 space-y-4">
+                  {message.charts.map((chart, index) => (
+                    <ChartComponent key={index} chartData={chart} />
+                  ))}
+                </div>
+              )}
             </div>
           ))}
           
